@@ -11,6 +11,7 @@
 
 <div class="modal-backdrop" on:click={closeModal} />
 <div class="modal">
+    <h2>CheckList</h2>
     <div class="content">
         <slot />
     </div>
@@ -59,5 +60,9 @@
     footer {
         float: right;
         padding: 1rem;
+    }
+
+    h2 {
+        margin: 1.5rem 2rem 0.5rem 2rem;
     }
 </style>

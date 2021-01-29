@@ -61,7 +61,7 @@
                 <Task
                     id={task.id}
                     title={task.title}
-                    checkList={tasks.checkList}
+                    checkList={tasks.checkLists}
                     done={task.done}
                 />
             {/each}
@@ -81,7 +81,7 @@
                 <Task
                     id={d.id}
                     title={d.title}
-                    checkList={d.checkList}
+                    checkLists={d.checkLists}
                     done={d.done}
                 />
             {/each}

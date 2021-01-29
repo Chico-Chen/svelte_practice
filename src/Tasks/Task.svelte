@@ -1,11 +1,10 @@
 <script>
     import TaskItems from "./task-store";
-    import EidtTask from "./EditTask.svelte";
-import EditTask from "./EditTask.svelte";
+    import EditTask from "./EditTask.svelte";
 
     export let id = null;
     export let title = "";
-    export let checkList = [];
+    export let checkLists = [];
     export let done = false;
 
 
@@ -24,9 +23,7 @@ import EditTask from "./EditTask.svelte";
                 tasks[taskIndex].done = true;
                 const updateTask = tasks[taskIndex];
                 const updateTasks = tasks;
-                console.log(taskIndex);
                 updateTasks[taskIndex] = updateTask;
-                console.log(updateTask);
                 return updateTasks;
             })
         }
@@ -66,7 +63,7 @@ import EditTask from "./EditTask.svelte";
             />
         </span>
         {#if editMode} 
-            <EditTask on:cancel={cancelEdit} />
+            <EditTask checkLists={checkLists} id={id} on:cancel={cancelEdit} />
         {/if}
         {#if !done}
             <span>

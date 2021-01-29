@@ -6,25 +6,25 @@ const tasks = writable([
     {
         id: ++id,
         title: "Learning TigerGraph",
-        checkList: [],
+        checkLists: [],
         done: false
     },
     {
         id: ++id,
         title: "Write a blog about tigergraph learning",
-        checkList: [],
+        checkLists: [],
         done: false
     },
     {
         id: ++id,
         title: "Learning TigerGraph",
-        checkList: [],
+        checkLists: [],
         done: false
     },
     {
         id: ++id,
         title: "Learning TigerGraph",
-        checkList: [],
+        checkLists: [],
         done: false
     }
 ]);
