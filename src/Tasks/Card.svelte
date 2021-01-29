@@ -1,15 +1,22 @@
 <script>
+    import { onDestroy } from 'svelte';
     import Task from "./Task.svelte";
     import TaskItem from "./task-store";
+    import Button from '../UIComponent/Button.svelte';
 
+    //list title variable
     export let title;
-
-    let id = 0;
 
     let tasks;
 
-    TaskItem.subscribe((tsks) => {
+    const unsubscribe = TaskItem.subscribe((tsks) => {
         tasks = tsks;
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
     });
 
     //textarea value
@@ -83,8 +90,10 @@
     <footer>
         {#if title === "Tasks"}
             {#if task_visible}
-                <button class="" on:click={saveHandler}>Save</button>
-                <button class="" on:click={cancelHandler}>Cancel</button>
+                <div class="right_side_button">
+                    <Button on:click={saveHandler}>Save</Button>
+                    <Button on:click={cancelHandler}>Cancel</Button>
+                </div>
             {:else}
                 <a href="#" on:click={newTaskHandler}>Add a task</a>
             {/if}
@@ -128,6 +137,7 @@
 
     a:hover {
         background-color: #8ac5cf;
+        color: white;
     }
 
     .title {
@@ -164,4 +174,10 @@
         overflow-wrap: break-word;
         outline: none;
     }
+
+    .right_side_button {
+        float: right;
+        margin-right: 1rem;
+    }
+
 </style>

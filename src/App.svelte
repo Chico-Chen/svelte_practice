@@ -1,5 +1,5 @@
 <script>
-	import Card from './Card/Card.svelte';
+	import Card from './Tasks/Card.svelte';
 	import Header from './Header/Header.svelte';
 
 	let titles = ['Tasks', 'Done'];
