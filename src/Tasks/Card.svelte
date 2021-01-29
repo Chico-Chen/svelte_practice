@@ -32,9 +32,12 @@
         task_visible = false;
     }
 
-    function saveHandler() {
+    async function saveHandler() {
+        if (textarea_value === '') {
+            return;
+        }
         const task = {
-            id: tasks.length + 2,
+            id: tasks.length + 1,
             title: textarea_value,
             description: "",
             checkList: [],
@@ -44,6 +47,8 @@
         TaskItem.update((items) => {
             return [...items, task];
         });
+
+        console.log(tasks);
 
         textarea_value = "";
 

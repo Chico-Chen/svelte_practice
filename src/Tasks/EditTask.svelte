@@ -1,15 +1,69 @@
 <script>
     import Modal from "../UIComponent/Modal.svelte";
-    import Button from '../UIComponent/Button.svelte';
-    import TaskItems from './task-store';
-    import { writable } from 'svelte/store';
+    import Button from "../UIComponent/Button.svelte";
+    import TaskItems from "./task-store";
+    import { writable } from "svelte/store";
+    import { onDestroy, onMount } from "svelte";
+// import { debug } from "svelte/internal";
 
+    //progress variable
     let progress = writable(0);
 
+    //task id
     export let id;
     export let checkLists = [];
 
+    //subscribe taskItems to get latest update
+    const unsubscribe = TaskItems.subscribe((tasks) => {
+        if (id) {
+            const targetTask = tasks.filter((t) => t.id === id);
+            checkLists = targetTask[0].checkLists;
+        }
+    });
+
+    onMount(() => {
+        if (checkLists.length !== 0) {
+            let doneWorks = checkLists.filter((c) => c.done);
+            progress_value = (doneWorks.length / checkLists.length) * 100;
+            progress.set(progress_value / 100);
+        }
+    });
+
+    onDestroy(() => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
+
+    //progress part
     let progress_value = 0;
+    function checkListHandler(checkList_id) {
+        //update checkList first
+        const checkListIndex = checkLists.findIndex(
+            (c) => c.id === checkList_id
+        );
+        const updateCheckList = checkLists[checkListIndex];
+        updateCheckList.done = !checkLists[checkListIndex].done;
+        const updateCheckLists = checkLists;
+        updateCheckLists[checkListIndex] = updateCheckList;
+        //update TaskItems
+        if (id) {
+            TaskItems.update((tasks) => {
+                const taskIndex = tasks.findIndex((t) => t.id === id);
+                const targetItem = tasks[taskIndex];
+                targetItem.checkLists = updateCheckLists;
+                const updateTask = targetItem;
+                const updateTasks = tasks;
+                updateTasks[taskIndex] = updateTask;
+                return updateTasks;
+            });
+        }
+
+        //set progress
+        let doneWorks = checkLists.filter((c) => c.done);
+        progress_value = (doneWorks.length / checkLists.length) * 100;
+        progress.set(progress_value / 100);
+    }
 
     let addMode = false;
 
@@ -20,20 +74,27 @@
     }
 
     function saveHandler() {
+        if (textarea_value === "") {
+            return;
+        }
         let newCheckList = {
+            id: checkLists.length + 1,
             value: textarea_value,
-            done: false
+            done: false,
         };
-        TaskItems.update(tasks => {
-            const taskIndex = tasks.findIndex(t => t.id === id);
+        TaskItems.update((tasks) => {
+            console.log(id);
+            const taskIndex = tasks.findIndex((t) => t.id === id);
             const targetItem = tasks[taskIndex];
+            console.log(targetItem);
             targetItem.checkLists.push(newCheckList);
             const updateTask = targetItem;
+            console.log(targetItem);
             const updateTasks = tasks;
             updateTasks[taskIndex] = updateTask;
             return updateTasks;
-        })
-        textarea_value = '';
+        });
+        textarea_value = "";
         addMode = false;
     }
 
@@ -42,6 +103,7 @@
     }
 </script>
 
+
 <Modal on:cancel>
     <form class="form">
         <div class="check-progress">
@@ -49,8 +111,15 @@
             <progress value={$progress} />
         </div>
         <div>
-            {#each checkLists as checkList}
-                <input type="checkbox" value={checkList.value} checked={checkList.done} />
+            {#each checkLists as checkList (checkList.id)}
+                <label class="checkList">
+                    <input
+                        type="checkbox"
+                        checked={checkList.done}
+                        on:click={checkListHandler(checkList.id)}
+                    />
+                    {checkList.value}
+                </label>
             {/each}
         </div>
         {#if !addMode}
@@ -92,7 +161,7 @@
 
     progress {
         display: inline-block;
-        width: 95%;
+        width: 92%;
         float: right;
     }
 
@@ -147,5 +216,9 @@
     .right_side_button {
         float: right;
         margin-right: 1rem;
+    }
+
+    .checkList {
+        margin: 1rem 1rem;
     }
 </style>

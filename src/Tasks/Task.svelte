@@ -1,11 +1,17 @@
 <script>
     import TaskItems from "./task-store";
     import EditTask from "./EditTask.svelte";
+    import { onMount } from 'svelte';
 
     export let id = null;
     export let title = "";
     export let checkLists = [];
     export let done = false;
+
+    onMount(() => {
+        console.log(id);
+        console.log(typeof(checkLists));
+    })
 
 
     function removeTaskHandler() {
@@ -33,15 +39,30 @@
 
     function editHandler() {
         editMode = true;
+        console.log(checkLists);
+        console.log(typeof(checkLists));
     }
 
     function cancelEdit() {
         editMode = null;
     }
 
+    function setDoneBackToTasks() {
+        if (id) {
+            TaskItems.update(tasks => {
+                const taskIndex = tasks.findIndex(t => t.id === id);
+                tasks[taskIndex].done = false;
+                const updateTask = tasks[taskIndex];
+                const updateTasks = tasks;
+                updateTasks[taskIndex] = updateTask;
+                return updateTasks;
+            })
+        }
+    }
+
 </script>
 
-<div class="task">
+<div class="task" on:click={setDoneBackToTasks}>
     <div class="title">
         <span>{title}</span>
     </div>
