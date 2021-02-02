@@ -80,10 +80,7 @@
         {:else}
             {#each tasks.filter((t) => t.done) as d (d.id)}
                 <Task
-                    id={d.id}
-                    title={d.title}
-                    checkLists={d.checkLists}
-                    done={d.done}
+                    task={d}
                 />
             {/each}
         {/if}

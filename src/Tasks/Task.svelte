@@ -1,33 +1,32 @@
 <script>
     import TaskItems from "./task-store";
     import EditTask from "./EditTask.svelte";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
 
     export let task = null;
 
     onMount(() => {
-        console.log(task.checkLists);
+        console.log(task.title);
     });
-
 
     function removeTaskHandler() {
         if (task) {
-            TaskItems.update(tasks => {
-                return tasks.filter(t => t.id != task.id);
+            TaskItems.update((tasks) => {
+                return tasks.filter((t) => t.id != task.id);
             });
         }
     }
 
     function doneHandler() {
         if (task) {
-            TaskItems.update(tasks => {
-                const taskIndex = tasks.findIndex(t => t.id === task.id);
+            TaskItems.update((tasks) => {
+                const taskIndex = tasks.findIndex((t) => t.id === task.id);
                 tasks[taskIndex].done = true;
                 const updateTask = tasks[taskIndex];
                 const updateTasks = tasks;
                 updateTasks[taskIndex] = updateTask;
                 return updateTasks;
-            })
+            });
         }
     }
 
@@ -43,17 +42,16 @@
 
     function setDoneBackToTasks() {
         if (task) {
-            TaskItems.update(tasks => {
-                const taskIndex = tasks.findIndex(t => t.id === task.id);
+            TaskItems.update((tasks) => {
+                const taskIndex = tasks.findIndex((t) => t.id === task.id);
                 tasks[taskIndex].done = false;
                 const updateTask = tasks[taskIndex];
                 const updateTasks = tasks;
                 updateTasks[taskIndex] = updateTask;
                 return updateTasks;
-            })
+            });
         }
     }
-
 </script>
 
 <div class="task" on:click={setDoneBackToTasks}>
@@ -70,17 +68,17 @@
                 />
             </span>
         {/if}
-        <span>
-            <img
-                on:click={editHandler}
-                src="https://img.icons8.com/dusk/64/000000/edit--v2.png"
-                alt="edit"
-            />
-        </span>
-        {#if editMode} 
-            <EditTask task={task} on:cancel={cancelEdit} />
+        {#if editMode}
+            <EditTask {task} on:cancel={cancelEdit} />
         {/if}
         {#if !task.done}
+            <span>
+                <img
+                    on:click={editHandler}
+                    src="https://img.icons8.com/dusk/64/000000/edit--v2.png"
+                    alt="edit"
+                />
+            </span>
             <span>
                 <img
                     on:click={doneHandler}
