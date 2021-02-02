@@ -4,27 +4,26 @@
     import TaskItems from "./task-store";
     import { writable } from "svelte/store";
     import { onDestroy, onMount } from "svelte";
-// import { debug } from "svelte/internal";
+    // import { debug } from "svelte/internal";
 
     //progress variable
     let progress = writable(0);
 
     //task id
-    export let id;
-    export let checkLists = [];
+    export let task = null;
 
     //subscribe taskItems to get latest update
     const unsubscribe = TaskItems.subscribe((tasks) => {
-        if (id) {
-            const targetTask = tasks.filter((t) => t.id === id);
-            checkLists = targetTask[0].checkLists;
+        if (task) {
+            const targetTask = tasks.filter((t) => t.id === task.id);
+            task.checkLists = targetTask[0].checkLists;
         }
     });
 
     onMount(() => {
-        if (checkLists.length !== 0) {
-            let doneWorks = checkLists.filter((c) => c.done);
-            progress_value = (doneWorks.length / checkLists.length) * 100;
+        if (task.checkLists && task.checkLists.length !== 0) {
+            let doneWorks = task.checkLists.filter((c) => c.done);
+            progress_value = (doneWorks.length / task.checkLists.length) * 100;
             progress.set(progress_value / 100);
         }
     });
@@ -39,17 +38,17 @@
     let progress_value = 0;
     function checkListHandler(checkList_id) {
         //update checkList first
-        const checkListIndex = checkLists.findIndex(
+        const checkListIndex = task.checkLists.findIndex(
             (c) => c.id === checkList_id
         );
-        const updateCheckList = checkLists[checkListIndex];
-        updateCheckList.done = !checkLists[checkListIndex].done;
-        const updateCheckLists = checkLists;
+        const updateCheckList = task.checkLists[checkListIndex];
+        updateCheckList.done = !task.checkLists[checkListIndex].done;
+        const updateCheckLists = task.checkLists;
         updateCheckLists[checkListIndex] = updateCheckList;
         //update TaskItems
-        if (id) {
+        if (task) {
             TaskItems.update((tasks) => {
-                const taskIndex = tasks.findIndex((t) => t.id === id);
+                const taskIndex = tasks.findIndex((t) => t.id === task.id);
                 const targetItem = tasks[taskIndex];
                 targetItem.checkLists = updateCheckLists;
                 const updateTask = targetItem;
@@ -60,8 +59,8 @@
         }
 
         //set progress
-        let doneWorks = checkLists.filter((c) => c.done);
-        progress_value = (doneWorks.length / checkLists.length) * 100;
+        let doneWorks = task.checkLists.filter((c) => c.done);
+        progress_value = (doneWorks.length / task.checkLists.length) * 100;
         progress.set(progress_value / 100);
     }
 
@@ -73,18 +72,18 @@
         addMode = true;
     }
 
-    function saveHandler() {
+    function saveCheckListHandler() {
         if (textarea_value === "") {
             return;
         }
         let newCheckList = {
-            id: checkLists.length + 1,
+            id: task.checkLists.length + 1,
             value: textarea_value,
             done: false,
         };
         TaskItems.update((tasks) => {
-            console.log(id);
-            const taskIndex = tasks.findIndex((t) => t.id === id);
+            console.log(task.id);
+            const taskIndex = tasks.findIndex((t) => t.id === task.id);
             const targetItem = tasks[taskIndex];
             console.log(targetItem);
             targetItem.checkLists.push(newCheckList);
@@ -96,13 +95,17 @@
         });
         textarea_value = "";
         addMode = false;
+
+        //reset progress
+        let doneWorks = task.checkLists.filter((c) => c.done);
+        progress_value = (doneWorks.length / task.checkLists.length) * 100;
+        progress.set(progress_value / 100);
     }
 
     function cancelHandler() {
         addMode = false;
     }
 </script>
-
 
 <Modal on:cancel>
     <form class="form">
@@ -111,16 +114,18 @@
             <progress value={$progress} />
         </div>
         <div>
-            {#each checkLists as checkList (checkList.id)}
-                <label class="checkList">
-                    <input
-                        type="checkbox"
-                        checked={checkList.done}
-                        on:click={checkListHandler(checkList.id)}
-                    />
-                    {checkList.value}
-                </label>
-            {/each}
+            {#if task.checkLists}
+                {#each task.checkLists as checkList (checkList.id)}
+                    <label class="checkList">
+                        <input
+                            type="checkbox"
+                            checked={checkList.done}
+                            on:click={checkListHandler(checkList.id)}
+                        />
+                        {checkList.value}
+                    </label>
+                {/each}
+            {/if}
         </div>
         {#if !addMode}
             <a href="#" on:click={addCheckList}>Add a checkList</a>
@@ -136,7 +141,7 @@
                     </div>
                 </div>
                 <div class="right_side_button">
-                    <Button on:click={saveHandler}>Save</Button>
+                    <Button on:click={saveCheckListHandler}>Save</Button>
                     <Button on:click={cancelHandler}>Cancel</Button>
                 </div>
             </div>

@@ -39,8 +39,7 @@
         const task = {
             id: tasks.length + 1,
             title: textarea_value,
-            description: "",
-            checkList: [],
+            checkLists: [],
             done: false,
         };
 
@@ -64,10 +63,7 @@
         {#if title === "Tasks"}
             {#each tasks.filter((t) => !t.done) as task (task.id)}
                 <Task
-                    id={task.id}
-                    title={task.title}
-                    checkList={tasks.checkLists}
-                    done={task.done}
+                    task={task}
                 />
             {/each}
             {#if task_visible}

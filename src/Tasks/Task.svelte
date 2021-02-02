@@ -3,29 +3,25 @@
     import EditTask from "./EditTask.svelte";
     import { onMount } from 'svelte';
 
-    export let id = null;
-    export let title = "";
-    export let checkLists = [];
-    export let done = false;
+    export let task = null;
 
     onMount(() => {
-        console.log(id);
-        console.log(typeof(checkLists));
-    })
+        console.log(task.checkLists);
+    });
 
 
     function removeTaskHandler() {
-        if (id) {
+        if (task) {
             TaskItems.update(tasks => {
-                return tasks.filter(t => t.id != id);
+                return tasks.filter(t => t.id != task.id);
             });
         }
     }
 
     function doneHandler() {
-        if (id) {
+        if (task) {
             TaskItems.update(tasks => {
-                const taskIndex = tasks.findIndex(t => t.id === id);
+                const taskIndex = tasks.findIndex(t => t.id === task.id);
                 tasks[taskIndex].done = true;
                 const updateTask = tasks[taskIndex];
                 const updateTasks = tasks;
@@ -39,8 +35,6 @@
 
     function editHandler() {
         editMode = true;
-        console.log(checkLists);
-        console.log(typeof(checkLists));
     }
 
     function cancelEdit() {
@@ -48,9 +42,9 @@
     }
 
     function setDoneBackToTasks() {
-        if (id) {
+        if (task) {
             TaskItems.update(tasks => {
-                const taskIndex = tasks.findIndex(t => t.id === id);
+                const taskIndex = tasks.findIndex(t => t.id === task.id);
                 tasks[taskIndex].done = false;
                 const updateTask = tasks[taskIndex];
                 const updateTasks = tasks;
@@ -64,10 +58,10 @@
 
 <div class="task" on:click={setDoneBackToTasks}>
     <div class="title">
-        <span>{title}</span>
+        <span>{task.title}</span>
     </div>
     <div class="operation">
-        {#if id}
+        {#if task}
             <span>
                 <img
                     on:click={removeTaskHandler}
@@ -84,9 +78,9 @@
             />
         </span>
         {#if editMode} 
-            <EditTask checkLists={checkLists} id={id} on:cancel={cancelEdit} />
+            <EditTask task={task} on:cancel={cancelEdit} />
         {/if}
-        {#if !done}
+        {#if !task.done}
             <span>
                 <img
                     on:click={doneHandler}
