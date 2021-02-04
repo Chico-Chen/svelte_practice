@@ -3,8 +3,9 @@
     import Button from "../UIComponent/Button.svelte";
     import TaskItems from "./task-store";
     import { writable } from "svelte/store";
-    import { onDestroy, onMount } from "svelte";
-    // import { debug } from "svelte/internal";
+    import { onDestroy, onMount} from "svelte";
+import Task from "./Task.svelte";
+
 
     //progress variable
     let progress = writable(0);
@@ -114,18 +115,16 @@
             <progress value={$progress} />
         </div>
         <div>
-            {#if task.checkLists}
-                {#each task.checkLists as checkList (checkList.id)}
-                    <label class="checkList">
-                        <input
-                            type="checkbox"
-                            checked={checkList.done}
-                            on:click={checkListHandler(checkList.id)}
-                        />
-                        {checkList.value}
-                    </label>
-                {/each}
-            {/if}
+            {#each task.checkLists as checkList (checkList.id)}
+                <label class="checkList">
+                    <input
+                        type="checkbox"
+                        bind:checked={checkList.done}
+                        on:click={checkListHandler(checkList.id)}
+                    />
+                    {checkList.value}
+                </label>
+            {/each}
         </div>
         {#if !addMode}
             <a href="#" on:click={addCheckList}>Add a checkList</a>
@@ -225,5 +224,8 @@
 
     .checkList {
         margin: 1rem 1rem;
+        display: flex;
     }
+
+
 </style>
